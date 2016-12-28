@@ -1,9 +1,6 @@
-language: python
-python:
-  - "3.5"
-install:
-  - pip install unittest2 coveralls
-script:
-  - nosetests --exe --with-coverage --cover-package=pyiterable
-after_success:
-    - coveralls
+test:
+  script:
+    apt-get update -qy
+    apt-get install -y python3-dev python3-pip
+    pip3 install -r requirements.txt
+    nosetests --with-coverage --cover-tests --cover-erase --cover-package=tgdbapi
