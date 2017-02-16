@@ -141,6 +141,14 @@ def remove_user_favorite(accountid, gameid):
     return tgdbapi.parser.parse_favorites_xml(xmlgames)
 
 
+class TGDBError(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __str__(self):
+        return self.msg
+
+
 def read_request(url, args=None, data=None):
     if args is not None and len(args) > 0:
         url = ''.join([url, '?', urllib.parse.urlencode(
@@ -155,8 +163,14 @@ def read_request(url, args=None, data=None):
     request.add_header("Referer", "http://thegamesdb.net/")
     request.add_header("User-agent", "Mozilla/5.0")
 
-    response = urllib.request.urlopen(request, data)
-    xmlstr = response.read()
-    xmlresponse = xml.etree.ElementTree.fromstring(xmlstr)
+    try:
+        response = urllib.request.urlopen(request, data)
+        xmlstr = response.read()
+        xmlresponse = xml.etree.ElementTree.fromstring(xmlstr)
+    except urllib.error.HTTPError as err:
+        raise TGDBError(err.reason)
+    except xml.etree.ElementTree.ParseError as err:
+        raise TGDBError("Bad result. Code: {0}, Position: {1}".format(
+            err.code, err.position))
 
     return xmlresponse

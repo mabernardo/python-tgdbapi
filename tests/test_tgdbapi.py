@@ -1,5 +1,5 @@
 import unittest
-from urllib.error import URLError
+from urllib.error import URLError, HTTPError
 from unittest.mock import patch, Mock
 
 import tgdbapi
@@ -137,6 +137,8 @@ class TestTGDBAPI(unittest.TestCase):
 
     FAVORITES_XML = [bytes('<Favorites><Game>12707</Game><Game>21206</Game>'
         '<Game>2190</Game></Favorites>', 'utf-8')]
+
+    BAD_XML = [bytes('<Data><Game></Data>', 'utf-8')]
 
     fa1 = GameImage(type=ImageType.fanart, width=1920, height=1080,
             url="http://thegamesdb.net/banners/fanart/original/2-1.jpg",
@@ -451,3 +453,18 @@ class TestTGDBAPI(unittest.TestCase):
 
         g1 = Game(id=2190)
         self.assertIn(g1, fg)
+
+    @patch("urllib.request.urlopen")
+    def test_TGDBError(self, mocked_request):
+        req = Mock()
+        req.read.side_effect = self.BAD_XML
+        mocked_request.return_value = req
+        with self.assertRaises(tgdbapi.api.TGDBError) as err:
+            game = tgdbapi.get_game(2)
+        e = err.exception
+        self.assertEqual(str(e), "Bad result. Code: 7, Position: (1, 14)")
+
+        req.read.side_effect = HTTPError(404, "Not Found", None, None, None)
+        mocked_request.return_value = req
+        with self.assertRaises(tgdbapi.api.TGDBError):
+            game = tgdbapi.get_game(2)
