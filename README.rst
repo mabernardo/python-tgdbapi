@@ -8,7 +8,7 @@ A comprehensive python wrapper for thegamesdb.net API (http://wiki.thegamesdb.ne
 
 Installation
 ------------
-..::
+::
 
     pip install python-tgdbapi
 
@@ -18,7 +18,7 @@ Contributing
 
 - Configure a virtual environment
 
-..::
+::
 
     python3.6 -m venv ./venv
 
