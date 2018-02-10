@@ -1,6 +1,9 @@
 .. image:: https://travis-ci.org/mabernardo/python-tgdbapi.svg?branch=master
     :target: https://travis-ci.org/mabernardo/python-tgdbapi
 
+.. image:: https://coveralls.io/repos/github/mabernardo/python-tgdbapi/badge.svg?branch=master
+    :target: https://coveralls.io/github/mabernardo/python-tgdbapi?branch=master
+
 python-tgdbapi
 ==============
 
@@ -27,4 +30,4 @@ Contributing
 Requirements
 ------------
 - python3.6
-- píp
+- pip
