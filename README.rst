@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/mabernardo/python-tgdbapi.svg?branch=master)](https://travis-ci.org/mabernardo/python-tgdbapi)
+.. image:: https://travis-ci.org/mabernardo/python-tgdbapi.svg?branch=master
+    :target: https://travis-ci.org/mabernardo/python-tgdbapi
 
 python-tgdbapi
 ==============
