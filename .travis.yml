@@ -3,4 +3,5 @@ python:
   - 3.6
 install: make install
 script: make test
-after_success: coveralls
+after_success:
+  - coveralls
