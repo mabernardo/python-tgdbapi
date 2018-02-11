@@ -1,187 +1,187 @@
 import unittest
-from urllib.error import URLError, HTTPError
+from urllib.error import HTTPError
 from unittest.mock import patch, Mock
 
 import tgdbapi
 from tgdbapi import GameImage, ImageType, Platform, Game
 
-class TestTGDBAPI(unittest.TestCase):
 
+class TestTGDBAPI(unittest.TestCase):
     GET_GAME_LIST_XML = ["<Data><Game>"
-        "<id>2190</id><GameTitle>Baldur's Gate</GameTitle>"
-        "<ReleaseDate>11/30/1998</ReleaseDate>"
-        "<Platform>PC</Platform>"
-        "</Game><Game>"
-        "<id>2191</id>"
-        "<GameTitle>Baldur's Gate II: Shadows of Amn</GameTitle>"
-        "<ReleaseDate>09/24/2000</ReleaseDate>"
-        "<Platform>PC</Platform>"
-        "</Game><Game>"
-        "<id>2192</id>"
-        "<GameTitle>Baldur's Gate II: Throne of Bhaal</GameTitle>"
-        "<ReleaseDate>06/22/2001</ReleaseDate>"
-        "<Platform>PC</Platform>"
-        "</Game></Data>".encode()]
+                         "<id>2190</id><GameTitle>Baldur's Gate</GameTitle>"
+                         "<ReleaseDate>11/30/1998</ReleaseDate>"
+                         "<Platform>PC</Platform>"
+                         "</Game><Game>"
+                         "<id>2191</id>"
+                         "<GameTitle>Baldur's Gate II: Shadows of Amn</GameTitle>"
+                         "<ReleaseDate>09/24/2000</ReleaseDate>"
+                         "<Platform>PC</Platform>"
+                         "</Game><Game>"
+                         "<id>2192</id>"
+                         "<GameTitle>Baldur's Gate II: Throne of Bhaal</GameTitle>"
+                         "<ReleaseDate>06/22/2001</ReleaseDate>"
+                         "<Platform>PC</Platform>"
+                         "</Game></Data>".encode()]
 
     IMAGES_TAG = '<Images><fanart>' \
-        '<original width="1920" height="1080">fanart/original/2-1.jpg' \
-        '</original><thumb>fanart/thumb/2-1.jpg</thumb></fanart>' \
-        '<fanart><original width="1920" height="1080">fanart/original/2-2.jpg' \
-        '</original><thumb>fanart/thumb/2-2.jpg</thumb></fanart>' \
-        '<fanart><original width="1920" height="1080">fanart/original/2-3.jpg' \
-        '</original><thumb>fanart/thumb/2-3.jpg</thumb></fanart>' \
-        '<fanart><original width="1920" height="1080">fanart/original/2-4.jpg' \
-        '</original><thumb>fanart/thumb/2-4.jpg</thumb></fanart>' \
-        '<fanart><original width="1920" height="1080">fanart/original/2-5.jpg' \
-        '</original><thumb>fanart/thumb/2-5.jpg</thumb></fanart>' \
-        '<fanart><original width="1920" height="1080">fanart/original/2-6.jpg' \
-        '</original><thumb>fanart/thumb/2-6.jpg</thumb></fanart>' \
-        '<boxart side="back" width="1525" height="2162" ' \
-        'thumb="boxart/thumb/original/back/2-1.jpg">' \
-        'boxart/original/back/2-1.jpg</boxart>' \
-        '<boxart side="front" width="1525" height="2160" ' \
-        'thumb="boxart/thumb/original/front/2-1.jpg">' \
-        'boxart/original/front/2-1.jpg</boxart>' \
-        '<banner width="760" height="140">graphical/2-g2.jpg</banner>' \
-        '<banner width="760" height="140">graphical/2-g3.jpg</banner>' \
-        '<screenshot><original width="1920" height="1080">screenshots/2-1.jpg' \
-        '</original><thumb>screenshots/thumb/2-1.jpg</thumb></screenshot>' \
-        '<clearlogo width="400" height="100">clearlogo/2.png</clearlogo>' \
-        '</Images>'
+                 '<original width="1920" height="1080">fanart/original/2-1.jpg' \
+                 '</original><thumb>fanart/thumb/2-1.jpg</thumb></fanart>' \
+                 '<fanart><original width="1920" height="1080">fanart/original/2-2.jpg' \
+                 '</original><thumb>fanart/thumb/2-2.jpg</thumb></fanart>' \
+                 '<fanart><original width="1920" height="1080">fanart/original/2-3.jpg' \
+                 '</original><thumb>fanart/thumb/2-3.jpg</thumb></fanart>' \
+                 '<fanart><original width="1920" height="1080">fanart/original/2-4.jpg' \
+                 '</original><thumb>fanart/thumb/2-4.jpg</thumb></fanart>' \
+                 '<fanart><original width="1920" height="1080">fanart/original/2-5.jpg' \
+                 '</original><thumb>fanart/thumb/2-5.jpg</thumb></fanart>' \
+                 '<fanart><original width="1920" height="1080">fanart/original/2-6.jpg' \
+                 '</original><thumb>fanart/thumb/2-6.jpg</thumb></fanart>' \
+                 '<boxart side="back" width="1525" height="2162" ' \
+                 'thumb="boxart/thumb/original/back/2-1.jpg">' \
+                 'boxart/original/back/2-1.jpg</boxart>' \
+                 '<boxart side="front" width="1525" height="2160" ' \
+                 'thumb="boxart/thumb/original/front/2-1.jpg">' \
+                 'boxart/original/front/2-1.jpg</boxart>' \
+                 '<banner width="760" height="140">graphical/2-g2.jpg</banner>' \
+                 '<banner width="760" height="140">graphical/2-g3.jpg</banner>' \
+                 '<screenshot><original width="1920" height="1080">screenshots/2-1.jpg' \
+                 '</original><thumb>screenshots/thumb/2-1.jpg</thumb></screenshot>' \
+                 '<clearlogo width="400" height="100">clearlogo/2.png</clearlogo>' \
+                 '</Images>'
 
     GET_GAME_XML = [bytes('<Data>'
-        '<baseImgUrl>http://thegamesdb.net/banners/</baseImgUrl>'
-        '<Game><id>2</id><GameTitle>Crysis</GameTitle>'
-        '<PlatformId>1</PlatformId><Platform>PC</Platform>'
-        '<ReleaseDate>11/13/2007</ReleaseDate>'
-        '<Overview>From the makers of Far Cry, Crysis offers ...</Overview>'
-        '<ESRB>M - Mature</ESRB><Genres><genre>Shooter</genre></Genres>'
-        '<Players>4+</Players><Co-op>No</Co-op>'
-        '<Youtube>http://www.youtube.com/watch?v=i3vO01xQ-DM</Youtube>'
-        '<Publisher>Electronic Arts</Publisher><Developer>Crytek</Developer>'
-        '<Rating>7.3077</Rating><Similar><SimilarCount>2</SimilarCount>'
-        '<Game><id>15246</id><PlatformId>15</PlatformId></Game>'
-        '<Game><id>15225</id><PlatformId>12</PlatformId></Game></Similar>' +
-        IMAGES_TAG +
-        '</Game></Data>', 'utf-8')]
+                          '<baseImgUrl>http://thegamesdb.net/banners/</baseImgUrl>'
+                          '<Game><id>2</id><GameTitle>Crysis</GameTitle>'
+                          '<PlatformId>1</PlatformId><Platform>PC</Platform>'
+                          '<ReleaseDate>11/13/2007</ReleaseDate>'
+                          '<Overview>From the makers of Far Cry, Crysis offers ...</Overview>'
+                          '<ESRB>M - Mature</ESRB><Genres><genre>Shooter</genre></Genres>'
+                          '<Players>4+</Players><Co-op>No</Co-op>'
+                          '<Youtube>http://www.youtube.com/watch?v=i3vO01xQ-DM</Youtube>'
+                          '<Publisher>Electronic Arts</Publisher><Developer>Crytek</Developer>'
+                          '<Rating>7.3077</Rating><Similar><SimilarCount>2</SimilarCount>'
+                          '<Game><id>15246</id><PlatformId>15</PlatformId></Game>'
+                          '<Game><id>15225</id><PlatformId>12</PlatformId></Game></Similar>' +
+                          IMAGES_TAG +
+                          '</Game></Data>', 'utf-8')]
 
     NOT_FOUND_XML = [bytes('<Data>'
-        '<baseImgUrl>http://thegamesdb.net/banners/</baseImgUrl>'
-        '</Data>', 'utf-8')]
+                           '<baseImgUrl>http://thegamesdb.net/banners/</baseImgUrl>'
+                           '</Data>', 'utf-8')]
 
     GET_ART_XML = [bytes('<Data>'
-        '<baseImgUrl>http://thegamesdb.net/banners/</baseImgUrl>'
-        + IMAGES_TAG + '</Data>', 'utf-8')]
+                         '<baseImgUrl>http://thegamesdb.net/banners/</baseImgUrl>'
+                         + IMAGES_TAG + '</Data>', 'utf-8')]
 
     PLATFORM_LIST_XML = [bytes('<Data>'
-        '<basePlatformUrl>http://thegamesdb.net/platform/</basePlatformUrl>'
-        '<Platforms><Platform><id>4916</id><name>Android</name>'
-        '<alias>android</alias></Platform><Platform><id>22</id>'
-        '<name>Atari 2600</name><alias>atari-2600</alias></Platform>'
-        '<Platform><id>4929</id><name>MSX</name><alias>msx</alias></Platform>'
-        '<Platform><id>4912</id><name>Nintendo 3DS</name>'
-        '<alias>nintendo-3ds</alias></Platform><Platform><id>8</id>'
-        '<name>Nintendo DS</name><alias>nintendo-ds</alias></Platform>'
-        '<Platform><id>9</id><name>Nintendo Wii</name>'
-        '<alias>nintendo-wii</alias></Platform><Platform><id>38</id>'
-        '<name>Nintendo Wii U</name><alias>nintendo-wii-u</alias></Platform>'
-        '<Platform><id>1</id><name>PC</name><alias>pc</alias></Platform>'
-        '</Platforms></Data>', 'utf-8')]
+                               '<basePlatformUrl>http://thegamesdb.net/platform/</basePlatformUrl>'
+                               '<Platforms><Platform><id>4916</id><name>Android</name>'
+                               '<alias>android</alias></Platform><Platform><id>22</id>'
+                               '<name>Atari 2600</name><alias>atari-2600</alias></Platform>'
+                               '<Platform><id>4929</id><name>MSX</name><alias>msx</alias></Platform>'
+                               '<Platform><id>4912</id><name>Nintendo 3DS</name>'
+                               '<alias>nintendo-3ds</alias></Platform><Platform><id>8</id>'
+                               '<name>Nintendo DS</name><alias>nintendo-ds</alias></Platform>'
+                               '<Platform><id>9</id><name>Nintendo Wii</name>'
+                               '<alias>nintendo-wii</alias></Platform><Platform><id>38</id>'
+                               '<name>Nintendo Wii U</name><alias>nintendo-wii-u</alias></Platform>'
+                               '<Platform><id>1</id><name>PC</name><alias>pc</alias></Platform>'
+                               '</Platforms></Data>', 'utf-8')]
 
     PLATFORM_XML = [bytes('<Data>'
-        '<baseImgUrl>http://thegamesdb.net/banners/</baseImgUrl>'
-        '<Platform><id>15</id><Platform>Microsoft Xbox 360</Platform>'
-        '<console>http://www.youtube.com/watch?v=15.png</console>'
-        '<controller>http://www.youtube.com/watch?v=15.png</controller>'
-        '<overview>The Xbox 360 is the second video game console...</overview>'
-        '<developer>Microsoft</developer><manufacturer>Microsoft</manufacturer>'
-        '<cpu>3.2 GHz PowerPC Tri-Core Xenon</cpu>'
-        '<memory>512 MB of GDDR3 RAM clocked at 700 MHz</memory>'
-        '<graphics>500 MHz ATI Xenos</graphics>'
-        '<sound>Dolby Digital 5.1 (TOSLINK and HDMI)</sound>'
-        '<display>1920x1080</display><media>Disc</media>'
-        '<maxcontrollers>4</maxcontrollers><Rating>8.6</Rating>'
-        '<Images><fanart><original width="1920" height="1080">'
-        'platform/fanart/15-1.jpg</original><thumb>'
-        'platform/fanart/thumb/15-1.jpg</thumb></fanart><fanart>'
-        '<original width="1920" height="1080">'
-        'platform/fanart/15-2.jpg</original><thumb>'
-        'platform/fanart/thumb/15-2.jpg</thumb></fanart>'
-        '<boxart side="back" width="1524" height="2162">'
-        'platform/boxart/15-1.jpg</boxart><banner width="760" height="140">'
-        'platform/banners/15-1.jpg</banner><consoleart>'
-        'platform/consoleart/15.png</consoleart><controllerart>'
-        'platform/controllerart/15.png</controllerart></Images></Platform>'
-        '</Data>', 'utf-8')]
+                          '<baseImgUrl>http://thegamesdb.net/banners/</baseImgUrl>'
+                          '<Platform><id>15</id><Platform>Microsoft Xbox 360</Platform>'
+                          '<console>http://www.youtube.com/watch?v=15.png</console>'
+                          '<controller>http://www.youtube.com/watch?v=15.png</controller>'
+                          '<overview>The Xbox 360 is the second video game console...</overview>'
+                          '<developer>Microsoft</developer><manufacturer>Microsoft</manufacturer>'
+                          '<cpu>3.2 GHz PowerPC Tri-Core Xenon</cpu>'
+                          '<memory>512 MB of GDDR3 RAM clocked at 700 MHz</memory>'
+                          '<graphics>500 MHz ATI Xenos</graphics>'
+                          '<sound>Dolby Digital 5.1 (TOSLINK and HDMI)</sound>'
+                          '<display>1920x1080</display><media>Disc</media>'
+                          '<maxcontrollers>4</maxcontrollers><Rating>8.6</Rating>'
+                          '<Images><fanart><original width="1920" height="1080">'
+                          'platform/fanart/15-1.jpg</original><thumb>'
+                          'platform/fanart/thumb/15-1.jpg</thumb></fanart><fanart>'
+                          '<original width="1920" height="1080">'
+                          'platform/fanart/15-2.jpg</original><thumb>'
+                          'platform/fanart/thumb/15-2.jpg</thumb></fanart>'
+                          '<boxart side="back" width="1524" height="2162">'
+                          'platform/boxart/15-1.jpg</boxart><banner width="760" height="140">'
+                          'platform/banners/15-1.jpg</banner><consoleart>'
+                          'platform/consoleart/15.png</consoleart><controllerart>'
+                          'platform/controllerart/15.png</controllerart></Images></Platform>'
+                          '</Data>', 'utf-8')]
 
     PLATFORM_GAMES_XML = [bytes('<Data><Game><id>10</id>'
-        '<GameTitle>Ace Combat 6: Fires of Liberation</GameTitle>'
-        '<thumb>boxart/original/front/10-1.jpg</thumb></Game>'
-        '<Game><id>11</id><GameTitle>Army of Two</GameTitle>'
-        '<thumb>boxart/original/front/11-1.jpg</thumb></Game>'
-        '<Game><id>24</id><GameTitle>Gears of War 2</GameTitle>'
-        '<thumb>boxart/original/front/24-1.jpg</thumb></Game>'
-        '<Game><id>27</id><GameTitle>Golden Axe: Beast Rider</GameTitle>'
-        '<ReleaseDate>10/14/2008</ReleaseDate>'
-        '<thumb>boxart/original/front/27-1.jpg</thumb></Game></Data>', 'utf-8')]
+                                '<GameTitle>Ace Combat 6: Fires of Liberation</GameTitle>'
+                                '<thumb>boxart/original/front/10-1.jpg</thumb></Game>'
+                                '<Game><id>11</id><GameTitle>Army of Two</GameTitle>'
+                                '<thumb>boxart/original/front/11-1.jpg</thumb></Game>'
+                                '<Game><id>24</id><GameTitle>Gears of War 2</GameTitle>'
+                                '<thumb>boxart/original/front/24-1.jpg</thumb></Game>'
+                                '<Game><id>27</id><GameTitle>Golden Axe: Beast Rider</GameTitle>'
+                                '<ReleaseDate>10/14/2008</ReleaseDate>'
+                                '<thumb>boxart/original/front/27-1.jpg</thumb></Game></Data>', 'utf-8')]
 
     UPDATES_XML = [bytes('<Items><Time>1477087829</Time>'
-        '<Game>10881</Game><Game>10882</Game><Game>10883</Game>'
-        '<Game>10905</Game><Game>10906</Game><Game>35990</Game>'
-        '<Game>40344</Game></Items>', 'utf-8')]
+                         '<Game>10881</Game><Game>10882</Game><Game>10883</Game>'
+                         '<Game>10905</Game><Game>10906</Game><Game>35990</Game>'
+                         '<Game>40344</Game></Items>', 'utf-8')]
 
     NO_UPDATES_XML = [bytes('<Items><Time>1477337654</Time></Items>', 'utf-8')]
 
     RATING_XML = [bytes('<Data><game>'
-        '<Rating>7.3</Rating></game></Data>', 'utf-8')]
+                        '<Rating>7.3</Rating></game></Data>', 'utf-8')]
 
     FAVORITES_XML = [bytes('<Favorites><Game>12707</Game><Game>21206</Game>'
-        '<Game>2190</Game></Favorites>', 'utf-8')]
+                           '<Game>2190</Game></Favorites>', 'utf-8')]
 
     BAD_XML = [bytes('<Data><Game></Data>', 'utf-8')]
 
     fa1 = GameImage(type=ImageType.fanart, width=1920, height=1080,
-            url="http://thegamesdb.net/banners/fanart/original/2-1.jpg",
-            thumb="http://thegamesdb.net/banners/fanart/thumb/2-1.jpg")
+                    url="http://thegamesdb.net/banners/fanart/original/2-1.jpg",
+                    thumb="http://thegamesdb.net/banners/fanart/thumb/2-1.jpg")
     fa2 = GameImage(type=ImageType.fanart, width=1920, height=1080,
-            url="http://thegamesdb.net/banners/fanart/original/2-2.jpg",
-            thumb="http://thegamesdb.net/banners/fanart/thumb/2-2.jpg")
+                    url="http://thegamesdb.net/banners/fanart/original/2-2.jpg",
+                    thumb="http://thegamesdb.net/banners/fanart/thumb/2-2.jpg")
     fa3 = GameImage(type=ImageType.fanart, width=1920, height=1080,
-            url="http://thegamesdb.net/banners/fanart/original/2-3.jpg",
-            thumb="http://thegamesdb.net/banners/fanart/thumb/2-3.jpg")
+                    url="http://thegamesdb.net/banners/fanart/original/2-3.jpg",
+                    thumb="http://thegamesdb.net/banners/fanart/thumb/2-3.jpg")
     fa4 = GameImage(type=ImageType.fanart, width=1920, height=1080,
-            url="http://thegamesdb.net/banners/fanart/original/2-4.jpg",
-            thumb="http://thegamesdb.net/banners/fanart/thumb/2-4.jpg")
+                    url="http://thegamesdb.net/banners/fanart/original/2-4.jpg",
+                    thumb="http://thegamesdb.net/banners/fanart/thumb/2-4.jpg")
     fa5 = GameImage(type=ImageType.fanart, width=1920, height=1080,
-            url="http://thegamesdb.net/banners/fanart/original/2-5.jpg",
-            thumb="http://thegamesdb.net/banners/fanart/thumb/2-5.jpg")
+                    url="http://thegamesdb.net/banners/fanart/original/2-5.jpg",
+                    thumb="http://thegamesdb.net/banners/fanart/thumb/2-5.jpg")
     fa6 = GameImage(type=ImageType.fanart, width=1920, height=1080,
-            url="http://thegamesdb.net/banners/fanart/original/2-6.jpg",
-            thumb="http://thegamesdb.net/banners/fanart/thumb/2-6.jpg")
+                    url="http://thegamesdb.net/banners/fanart/original/2-6.jpg",
+                    thumb="http://thegamesdb.net/banners/fanart/thumb/2-6.jpg")
 
     ba1 = GameImage(type=ImageType.boxart, side="back",
-            width=1525, height=2162,
-            url="http://thegamesdb.net/banners/boxart/original/back/2-1.jpg",
-            thumb="http://thegamesdb.net/banners/"
-                "boxart/thumb/original/back/2-1.jpg")
+                    width=1525, height=2162,
+                    url="http://thegamesdb.net/banners/boxart/original/back/2-1.jpg",
+                    thumb="http://thegamesdb.net/banners/"
+                          "boxart/thumb/original/back/2-1.jpg")
 
     ba2 = GameImage(type=ImageType.boxart, side="front",
-            width=1525, height=2160,
-            url="http://thegamesdb.net/banners/boxart/original/front/2-1.jpg",
-            thumb="http://thegamesdb.net/banners/"
-                "boxart/thumb/original/front/2-1.jpg")
+                    width=1525, height=2160,
+                    url="http://thegamesdb.net/banners/boxart/original/front/2-1.jpg",
+                    thumb="http://thegamesdb.net/banners/"
+                          "boxart/thumb/original/front/2-1.jpg")
 
     bn1 = GameImage(type=ImageType.banner, width=760, height=140,
-            url="http://thegamesdb.net/banners/graphical/2-g2.jpg")
+                    url="http://thegamesdb.net/banners/graphical/2-g2.jpg")
     bn2 = GameImage(type=ImageType.banner, width=760, height=140,
-            url="http://thegamesdb.net/banners/graphical/2-g3.jpg")
+                    url="http://thegamesdb.net/banners/graphical/2-g3.jpg")
 
     ss1 = GameImage(type=ImageType.screenshot, width=1920, height=1080,
-            url="http://thegamesdb.net/banners/screenshots/2-1.jpg",
-            thumb="http://thegamesdb.net/banners/screenshots/thumb/2-1.jpg")
+                    url="http://thegamesdb.net/banners/screenshots/2-1.jpg",
+                    thumb="http://thegamesdb.net/banners/screenshots/thumb/2-1.jpg")
 
     cl1 = GameImage(type=ImageType.clearlogo, width=400, height=100,
-            url="http://thegamesdb.net/banners/clearlogo/2.png")
+                    url="http://thegamesdb.net/banners/clearlogo/2.png")
 
     @patch("urllib.request.urlopen")
     def test_get_game_list(self, mocked_request):
@@ -220,14 +220,14 @@ class TestTGDBAPI(unittest.TestCase):
         self.assertEqual(game.platform, "PC")
         self.assertEqual(game.release_date, "11/13/2007")
         self.assertEqual(game.overview,
-            "From the makers of Far Cry, Crysis offers ...")
+                         "From the makers of Far Cry, Crysis offers ...")
         self.assertEqual(game.esrb, "M - Mature")
         self.assertEqual(len(game.genres), 1)
         self.assertEqual(game.genres[0], "Shooter")
         self.assertEqual(game.players, "4+")
         self.assertEqual(game.coop, "No")
         self.assertEqual(game.youtube,
-            "http://www.youtube.com/watch?v=i3vO01xQ-DM")
+                         "http://www.youtube.com/watch?v=i3vO01xQ-DM")
         self.assertEqual(game.publisher, "Electronic Arts")
         self.assertEqual(game.developer, "Crytek")
         self.assertEqual(game.rating, 7.3077)
@@ -307,7 +307,7 @@ class TestTGDBAPI(unittest.TestCase):
         self.assertEqual(p.console, "http://www.youtube.com/watch?v=15.png")
         self.assertEqual(p.controller, "http://www.youtube.com/watch?v=15.png")
         self.assertEqual(p.overview,
-            "The Xbox 360 is the second video game console...")
+                         "The Xbox 360 is the second video game console...")
         self.assertEqual(p.developer, "Microsoft")
         self.assertEqual(p.manufacturer, "Microsoft")
         self.assertEqual(p.cpu, "3.2 GHz PowerPC Tri-Core Xenon")
@@ -320,23 +320,23 @@ class TestTGDBAPI(unittest.TestCase):
         self.assertEqual(p.rating, 8.6)
 
         fa1 = GameImage(type=ImageType.fanart, width=1920, height=1080,
-            url="http://thegamesdb.net/banners/platform/fanart/15-1.jpg",
-            thumb="http://thegamesdb.net/banners/"
-                "platform/fanart/thumb/15-1.jpg")
+                        url="http://thegamesdb.net/banners/platform/fanart/15-1.jpg",
+                        thumb="http://thegamesdb.net/banners/"
+                              "platform/fanart/thumb/15-1.jpg")
         fa2 = GameImage(type=ImageType.fanart, width=1920, height=1080,
-            url="http://thegamesdb.net/banners/platform/fanart/15-2.jpg",
-            thumb="http://thegamesdb.net/banners/"
-                "platform/fanart/thumb/15-2.jpg")
+                        url="http://thegamesdb.net/banners/platform/fanart/15-2.jpg",
+                        thumb="http://thegamesdb.net/banners/"
+                              "platform/fanart/thumb/15-2.jpg")
 
         ba1 = GameImage(type=ImageType.boxart, side="back",
-                width=1524, height=2162,
-                url="http://thegamesdb.net/banners/platform/boxart/15-1.jpg")
+                        width=1524, height=2162,
+                        url="http://thegamesdb.net/banners/platform/boxart/15-1.jpg")
 
         consoleart = GameImage(type=ImageType.consoleart,
-            url="http://thegamesdb.net/banners/platform/consoleart/15.png")
+                               url="http://thegamesdb.net/banners/platform/consoleart/15.png")
 
         controllerart = GameImage(type=ImageType.controllerart,
-            url="http://thegamesdb.net/banners/platform/controllerart/15.png")
+                                  url="http://thegamesdb.net/banners/platform/controllerart/15.png")
 
         self.assertIn(fa1, p.images)
         self.assertIn(fa2, p.images)
@@ -460,11 +460,11 @@ class TestTGDBAPI(unittest.TestCase):
         req.read.side_effect = self.BAD_XML
         mocked_request.return_value = req
         with self.assertRaises(tgdbapi.api.TGDBError) as err:
-            game = tgdbapi.get_game(2)
+            tgdbapi.get_game(2)
         e = err.exception
         self.assertEqual(str(e), "Bad result. Code: 7, Position: (1, 14)")
 
         req.read.side_effect = HTTPError(404, "Not Found", None, None, None)
         mocked_request.return_value = req
         with self.assertRaises(tgdbapi.api.TGDBError):
-            game = tgdbapi.get_game(2)
+            tgdbapi.get_game(2)

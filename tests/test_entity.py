@@ -1,6 +1,7 @@
 import unittest
 from tgdbapi import Game, GameImage, ImageType, Platform
 
+
 class TestEntity(unittest.TestCase):
 
     def test_game(self):
@@ -16,17 +17,17 @@ class TestEntity(unittest.TestCase):
 
     def test_game_image(self):
         image1 = GameImage(type=ImageType.boxart, side="front", width=1920,
-            height=1080, url="http://someurl.com", thumb="http://thumb.com")
+                           height=1080, url="http://someurl.com", thumb="http://thumb.com")
         image2 = GameImage(type=ImageType.boxart, side="front", width=1920,
-            height=1080, url="http://someurl.com", thumb="http://thumb.com")
+                           height=1080, url="http://someurl.com", thumb="http://thumb.com")
         image3 = GameImage(type=ImageType.banner, side="back", width=1920,
-            height=1080, url="http://xsomeurl.com", thumb="http://thumb.com")
+                           height=1080, url="http://xsomeurl.com", thumb="http://thumb.com")
 
         self.assertEqual(image1, image2)
         self.assertEqual(image1.__hash__(), image2.__hash__())
         self.assertEqual(str(image1), "http://someurl.com")
         self.assertEqual(repr(image1),
-            '<GameImage(ImageType.boxart, "http://someurl.com")>')
+                         '<GameImage(ImageType.boxart, "http://someurl.com")>')
         self.assertNotEqual(image1, image3)
         self.assertTrue(image3 > image1)
 

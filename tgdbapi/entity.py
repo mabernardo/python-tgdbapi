@@ -1,11 +1,12 @@
 from enum import Enum
 
+
 class Game(object):
 
     def __init__(self, id=None, title=None, platform_id=None, platform=None,
-            release_date=None, overview=None, esrb=None, genres=None,
-            players=None, coop=None, youtube=None, publisher=None,
-            developer=None, rating=None, similar=None, images=None):
+                 release_date=None, overview=None, esrb=None, genres=None,
+                 players=None, coop=None, youtube=None, publisher=None,
+                 developer=None, rating=None, similar=None, images=None):
         self.id = id
         self.title = title
         self.platform_id = platform_id,
@@ -47,11 +48,10 @@ class ImageType(Enum):
     controllerart = 7
 
 
-
 class GameImage(object):
 
     def __init__(self, type=None, side=None, width=None, height=None, url=None,
-            thumb=None):
+                 thumb=None):
         self.type = type
         self.side = side
         self.width = width
@@ -79,9 +79,9 @@ class GameImage(object):
 class Platform(object):
 
     def __init__(self, id=None, name=None, alias=None, controller=None,
-            overview=None, developer=None, manufacturer=None, cpu=None,
-            memory=None, graphics=None, sound=None, display=None, media=None,
-            maxcontrollers=None, rating=None, images=None, thumb=None):
+                 overview=None, developer=None, manufacturer=None, cpu=None,
+                 memory=None, graphics=None, sound=None, display=None, media=None,
+                 maxcontrollers=None, rating=None, images=None, thumb=None):
         self.id = id
         self.name = name
         self.alias = alias
