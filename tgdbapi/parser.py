@@ -1,5 +1,6 @@
 from tgdbapi.entity import Game, GameImage, ImageType, Platform
 
+
 def parse_game_xml(gamesxml):
     game_list = []
     for el in gamesxml.findall("Game"):
@@ -48,31 +49,34 @@ def parse_similar_tag(tag):
 def parse_images_tag(tag):
     image_list = None
     base_url = safe_read_el(tag, "baseImgUrl")
-    make_url = lambda s: "".join([base_url, s]) if s else None
     for images in tag.iter("Images"):
         image_list = list()
         for image in images:
             img = GameImage(type=ImageType[image.tag])
             if img.type in [ImageType.fanart, ImageType.screenshot]:
                 attrs = image.find("original")
-                img.url = make_url(attrs.text)
-                img.thumb = make_url(safe_read_el(image, "thumb"))
+                img.url = make_url(base_url, attrs.text)
+                img.thumb = make_url(base_url, safe_read_el(image, "thumb"))
                 img.width = int(attrs.get("width", 0))
                 img.height = int(attrs.get("height", 0))
             elif img.type is ImageType.boxart:
-                img.url = make_url(image.text)
-                img.thumb = make_url(image.get("thumb"))
+                img.url = make_url(base_url, image.text)
+                img.thumb = make_url(base_url, image.get("thumb"))
                 img.width = int(image.get("width"))
                 img.height = int(image.get("height"))
                 img.side = image.attrib.get("side")
             elif img.type in [ImageType.clearlogo, ImageType.banner]:
-                img.url = make_url(image.text)
+                img.url = make_url(base_url, image.text)
                 img.width = int(image.attrib.get("width", 0))
                 img.height = int(image.attrib.get("height", 0))
             elif img.type in [ImageType.consoleart, ImageType.controllerart]:
-                img.url = make_url(image.text)
+                img.url = make_url(base_url, image.text)
             image_list.append(img)
     return image_list
+
+
+def make_url(base_url, endpoint):
+    return "".join([base_url, endpoint]) if endpoint else None
 
 
 def parse_platform_xml(platformxml):
@@ -124,6 +128,7 @@ def parse_favorites_xml(favoritesxml):
 
 def parse_rating_xml(ratingxml):
     return safe_read_float(ratingxml, "game/Rating")
+
 
 def safe_read_int(el, match):
     tag = el.find(match)
