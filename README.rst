@@ -4,8 +4,8 @@
 .. image:: https://coveralls.io/repos/github/mabernardo/python-tgdbapi/badge.svg?branch=master
     :target: https://coveralls.io/github/mabernardo/python-tgdbapi?branch=master
 
-.. image:: https://codecov.io/gh/codecov/python-tgdbapi/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/codecov/python-tgdbapi
+.. image:: https://codecov.io/gh/mabernardo/python-tgdbapi/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/mabernardo/python-tgdbapi
 
 python-tgdbapi
 ==============
