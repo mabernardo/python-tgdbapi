@@ -1,9 +1,6 @@
 .. image:: https://travis-ci.org/mabernardo/python-tgdbapi.svg?branch=master
     :target: https://travis-ci.org/mabernardo/python-tgdbapi
 
-.. image:: https://coveralls.io/repos/github/mabernardo/python-tgdbapi/badge.svg?branch=master
-    :target: https://coveralls.io/github/mabernardo/python-tgdbapi?branch=master
-
 .. image:: https://codecov.io/gh/mabernardo/python-tgdbapi/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/mabernardo/python-tgdbapi
 
@@ -20,6 +17,8 @@ Installation
 
 Contributing
 ------------
+- Check the Issue Tracker: github.com/mabernardo/$project/issues
+
 - Fork the project
 
 - Configure a virtual environment
@@ -28,7 +27,14 @@ Contributing
 
     python3.6 -m venv ./venv
 
-- Start coding
+- Install the requirements:
+
+::
+
+    make install
+
+- Start coding ;)
+
 
 Requirements
 ------------
