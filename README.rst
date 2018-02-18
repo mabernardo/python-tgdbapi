@@ -4,6 +4,14 @@
 .. image:: https://codecov.io/gh/mabernardo/python-tgdbapi/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/mabernardo/python-tgdbapi
 
+.. image:: https://landscape.io/github/mabernardo/python-tgdbapi/develop/landscape.svg?style=flat
+   :target: https://landscape.io/github/mabernardo/python-tgdbapi/master
+   :alt: Code Health
+
+.. image:: https://readthedocs.org/projects/python-tgdbapi/badge/?version=latest
+    :target: http://python-tgdbapi.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+
 python-tgdbapi
 ==============
 
@@ -17,7 +25,7 @@ Installation
 
 Contributing
 ------------
-- Check the Issue Tracker: github.com/mabernardo/$project/issues
+- Check the Issue Tracker: https://github.com/mabernardo/python-tgdbapi/issues
 
 - Fork the project
 
