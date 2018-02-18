@@ -10,6 +10,7 @@ import tgdbapi
 
 here = os.path.abspath(os.path.dirname(__file__))
 
+
 def read(*filenames, **kwargs):
     encoding = kwargs.get('encoding', 'utf-8')
     sep = kwargs.get('sep', '\n')
@@ -19,7 +20,8 @@ def read(*filenames, **kwargs):
             buf.append(f.read())
     return sep.join(buf)
 
-long_description = read('README.rst')
+
+long_description = read('/'.join((here, 'README.rst')))
 
 class PyTest(TestCommand):
     def finalize_options(self):
